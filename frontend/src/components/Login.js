@@ -14,9 +14,8 @@ const Login = () => {
         setError("");
 
         let apiUrl = role === "student"
-            ? "http://localhost:5000/student/login"
-            : "http://localhost:5000/librarian/login";
-
+        ? "http://localhost:5000/api/auth/student/login"
+        : "http://localhost:5000/api/auth/librarian/login";
         console.log("API Call to:", apiUrl); // ✅ Debugging log
 
         try {

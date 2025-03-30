@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ChangePassword.css"; // ✅ Import CSS for styling
@@ -11,39 +12,48 @@ const ChangePassword = () => {
     const navigate = useNavigate();
 
     const handlePasswordChange = async () => {
+        if (!userType) {
+            setMessage("User Type is required!");
+            return;
+        }
+    
         if (newPassword.length < 6) {
             setMessage("New password must be at least 6 characters long!");
             return;
         }
-
+    
+        // ✅ Ensure no duplicate keys
+        const requestData = {
+            Name: name,
+            OldPassword: oldPassword,
+            NewPassword: newPassword,
+            UserType: userType.charAt(0).toUpperCase() + userType.slice(1).toLowerCase(), // ✅ Fi
+        };
+    
+        console.log("Sending Request Data:", requestData); // ✅ Debugging before sending
+    
         try {
-            const response = await fetch("http://localhost:5000/change-password", {
+            const response = await fetch("http://localhost:5000/api/auth/change-password", {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    Name: name,
-                    OldPassword: oldPassword,
-                    NewPassword: newPassword,
-                    UserType: userType.toLowerCase(), // Converting to lowercase or uppercase based on your choice
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestData), // ✅ Only one JSON.stringify call
             });
-
+    
             const data = await response.json();
-            console.log("Server Response:", data); // Log response data to see what the server returns
-
+            console.log("Server Response:", data); // ✅ Debugging response
+    
             if (data.success) {
-                setMessage(data.message);
+                setMessage("Password changed successfully!");
                 setTimeout(() => navigate("/student-dashboard"), 2000);
             } else {
                 setMessage(data.error || "Something went wrong!");
             }
         } catch (error) {
-            console.error("Error during fetch:", error); // Log any error during fetch
+            console.error("Error during fetch:", error);
             setMessage("An error occurred, please try again!");
         }
     };
+    
 
     // Handle going back to previous page
     const handleBack = () => {
